@@ -1,4 +1,4 @@
-## ARJ-Stack: AWS Lambda Terraform module
+## ARJ-Stack: AWS Lambda Function Terraform module
 
 A Terraform module for provisioning AWS Lambda
 

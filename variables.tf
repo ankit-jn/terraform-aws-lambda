@@ -178,12 +178,30 @@ variable "aliases" {
     description = <<EOF
 List of Lambda Function Alias configuration Map:
 
-name: (Required) The name of the alias
-description: (Optional) The description of the alias
+name: (Required) The name of the alias.
+description: (Optional) The description of the alias.
 function_version: (Optional) The Lambda function version which this alias is created for.
 additional_version_weights: (Optional) A map of key/value pairs that defines the proportion of events that should be sent to different versions of a lambda function.
 EOF
     type    = any
+    default = []
+}
+
+variable "lambda_permissions" {
+    description = <<EOF
+The list of permissions configuration map, given to external sources to access the Lambda function.
+
+id: (Required) The unique Name of the permission.
+action: (Optional) The AWS Lambda action you want to allow in this statement.
+qualifier: (Optional) Function version or alias name on which this permission will be applied.
+principal: (Required) The principal who is getting this permission.
+principal_org_id: (Optional) The identifier for your organization in AWS Organizations.
+source_arn: (Optional) The ARN of the specific resource to grant permission to.
+source_account: (Optional) The AWS account ID (without a hyphen) of the source owner, for allowing cross-account access, or for S3 and SES.
+function_url_auth_type: (Optional) Lambda Function URLs authentication type.
+event_source_token: (Optional) The Event Source Token to validate. Used with Alexa Skills.
+EOF
+    type = list(map(string))
     default = []
 }
 

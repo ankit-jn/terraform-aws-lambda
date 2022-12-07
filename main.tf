@@ -114,3 +114,18 @@ module "lambda_role" {
     role_default_tags = merge({"Name" = format("%s-role", var.name)}, {"Lambda" = var.name}, var.tags)
     policy_default_tags = merge({"Name" = format("%s-role-policy", var.name)}, {"Lambda" = var.name}, var.tags)
 }
+
+resource aws_lambda_permission "this" {
+    for_each = { for permission in lambda_permissions: permission.id => permission }
+
+    statement_id  = each.key
+    action        = lookup(each.value, "action", "lambda:InvokeFunction")
+    function_name = aws_lambda_function.this.function_name
+    qualifier     = lookup(each.value, "qualifier", null)
+    principal     = lookup(each.value, "principal")
+    principal_org_id = lookup(each.value, "principal_org_id", null)
+    source_arn    = lookup(each.value, "source_arn", null)
+    source_account = lookup(each.value, "source_account", null)
+    function_url_auth_type = (lookup(each.value, "action", "lambda:InvokeFunction") == "lambda:InvokeFunctionUrl") ? lookup(each.value, "function_url_auth_type", null) : null
+    event_source_token = lookup(each.value, "event_source_token", null)
+}

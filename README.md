@@ -34,9 +34,6 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | Name | Description | Type | Default | Required | Example|
 |:------|:------|:------|:------|:------:|:------|
 | <a name="name"></a> [name](#input\_name) | The name of the Lambda function. | `string` |  | yes | |
-| <a name="role_arn"></a> [role_arn](#input\_role\_arn) | The Amazon Resource Name (ARN) of the existing function's execution role. | `string` | `null` | no | |
-| <a name="create_role"></a> [create_role](#input\_create\_role) | Flag to decide if new IAM Role is required to be provisioned. | `bool` | `true` | no | |
-| <a name="policies"></a> [policies](#input\_policies) | List of Policies (to be provisioned) to be attached to IAM Role. | `any` | `[]` | no | |
 | <a name="description"></a> [description](#input\_description) | Description of what your Lambda Function does. | `string` | `null` | no | |
 | <a name="architecture"></a> [architecture](#input\_architecture) | Instruction set architecture for Lambda function. | `string` | `"x86_64"` | no | |
 | <a name="runtime"></a> [runtime](#input\_runtime) | Identifier of the function's runtime. | `string` | `null` | no | |
@@ -59,8 +56,43 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="sg_ids"></a> [sg_ids](#input\_sg\_ids) | List of security group IDs associated with the Lambda function. | `list(string)` | `[]` | no | |
 | <a name="enable_snap_start"></a> [enable_snap_start](#input\_enable\_snap\_start) | Flag to decide if enable snap start on `PublishedVersions`. | `bool` | `false` | no | |
 | <a name="tracing_mode"></a> [tracing_mode](#input\_tracing\_mode) |  | `string` | `null` | no | |
-| <a name="aliases"></a> [aliases](#input\_aliases) | List of Lambda Function Alias configuration Map. | `any` | `[]` | no | |
+| <a name="aliases"></a> [aliases](#aliases) | List of Lambda Function Alias configuration Map. | `any` | `[]` | no | |
 | <a name="tags"></a> [tags](#input\_tags) | Map of default tags to assign to Lambda. | `map(string)` | `{}` | no | |
+
+#### permissions
+
+| Name | Description | Type | Default | Required | Example|
+|:------|:------|:------|:------|:------:|:------|
+| <a name="role_arn"></a> [role_arn](#input\_role\_arn) | The Amazon Resource Name (ARN) of the existing function's execution role. | `string` | `null` | no | |
+| <a name="create_role"></a> [create_role](#input\_create\_role) | Flag to decide if new IAM Role is required to be provisioned. | `bool` | `true` | no | |
+| <a name="policies"></a> [policies](#input\_policies) | List of Policies (to be provisioned) to be attached to IAM Role. | `any` | `[]` | no | |
+| <a name="lambda_permissions"></a> [lambda_permissions](#lambda\_permissions) | The list of permissions configuration map, given to external sources to access the Lambda function. | `list(map(string))` | `[]` | no | |
+
+### Nested Configuration Maps: 
+
+#### aliases
+
+| Name | Description | Type | Default | Required | Example|
+|:------|:------|:------|:------|:------:|:------|
+| <a name="name"></a> [name](#input\_name) | The name of the alias. | `string` |  | yes |  |
+| <a name="description"></a> [description](#input\_description) | The description of the alias. | `string` | `null` | no |  |
+| <a name="function_version"></a> [function_version](#input\_function\_version) | The Lambda function version which this alias is created for. | `string` | `"$LATEST"` | no |  |
+| <a name="additional_version_weights"></a> [additional_version_weights](#input\_additional\_version\_weights) | A map of key/value pairs that defines the proportion of events that should be sent to different versions of a lambda function. | `map(string)` | `{}` | no |  |
+
+#### lambda_permissions
+
+| Name | Description | Type | Default | Required |
+|:------|:------|:------|:------|:------:|
+| <a name="id"></a> [id](#input\_id) | The unique Name of the permission. | `string` |  | yes |
+| <a name="action"></a> [action](#input\_action) | The AWS Lambda action you want to allow in this statement. | `string` | `null` | no |
+| <a name="qualifier"></a> [qualifier](#input\_qualifier) | Function version or alias name on which this permission will be applied. | `string` | `null` | no |
+| <a name="principal"></a> [principal](#input\_principal) | The principal who is getting this permission. | `string` |  | yes |
+| <a name="principal_org_id"></a> [principal_org_id](#input\_principal\_org\_id) | The identifier for your organization in AWS Organizations. | `string` | `null` | no |
+| <a name="source_arn"></a> [source_arn](#input\_source\_arn) | The ARN of the specific resource to grant permission to. | `string` | `null` | no |
+| <a name="source_account"></a> [source_account](#input\_source\_account) | The AWS account ID (without a hyphen) of the source owner, for allowing cross-account access, or for S3 and SES. | `string` | `null` | no |
+| <a name="function_url_auth_type"></a> [function_url_auth_type](#input\_function\_url\_auth\_type) | Lambda Function URLs authentication type. | `string` | `null` | no |
+| <a name="event_source_token"></a> [event_source_token](#input\_event\_source\_token) | The Event Source Token to validate. Used with Alexa Skills. | `string` | `null` | no |
+
 
 ### Outputs
 

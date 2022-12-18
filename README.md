@@ -51,12 +51,15 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="publish"></a> [publish](#input\_publish) | Flag to decide if publish creation/change as new Lambda Function Version. | `bool` | `false` | no | |
 | <a name="ephemeral_storage"></a> [ephemeral_storage](#input\_ephemeral\_storage) | The amount of Ephemeral storage(/tmp) to allocate for the Lambda Function in MB. | `number` | `512` | no | |
 | <a name="environment_variables"></a> [environment_variables](#input\_environment\_variables) | The map of the environment variables. | `map(string)` | `{}` | no | |
+| <a name="efs_arn"></a> [efs_arn](#input\_efs\_arn) | Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system. | `string` | `null` | no | |
+| <a name="efs_mount_path"></a> [efs_mount_path](#input\_efs\_mount\_path) | Path where the function can access the file system, starting with /mnt/. | `string` | `null` | no | |
 | <a name="dead_letter_target_arn"></a> [dead_letter_target_arn](#input\_dead\_letter\_target\_arn) | The ARN of an SNS topic or SQS queue to notify when an invocation fails. | `string` | `null` | no | |
 | <a name="subnet_ids"></a> [subnet_ids](#input\_subnet\_ids) | List of subnet IDs associated with the Lambda function. | `list(string)` | `[]` | no | |
 | <a name="sg_ids"></a> [sg_ids](#input\_sg\_ids) | List of security group IDs associated with the Lambda function. | `list(string)` | `[]` | no | |
 | <a name="enable_snap_start"></a> [enable_snap_start](#input\_enable\_snap\_start) | Flag to decide if enable snap start on `PublishedVersions`. | `bool` | `false` | no | |
 | <a name="tracing_mode"></a> [tracing_mode](#input\_tracing\_mode) |  | `string` | `null` | no | |
-| <a name="aliases"></a> [aliases](#aliases) | List of Lambda Function Alias configuration Map. | `any` | `[]` | no | |
+| <a name="aliases"></a> [aliases](#alias) | List of Lambda Function Alias configuration Map. | `any` | `[]` | no | |
+| <a name="lambda_function_provisioned_concurrency"></a> [lambda_function_provisioned_concurrency](#lambda\_function\_provisioned\_concurrency) | Provisioned Concurrency Configuration for Lambda Function versions. | list(map(string)) | `[]` | no | |
 | <a name="tags"></a> [tags](#input\_tags) | Map of default tags to assign to Lambda. | `map(string)` | `{}` | no | |
 
 #### permissions
@@ -70,7 +73,7 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 
 ### Nested Configuration Maps: 
 
-#### aliases
+#### alias
 
 | Name | Description | Type | Default | Required | Example|
 |:------|:------|:------|:------|:------:|:------|
@@ -78,6 +81,7 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="description"></a> [description](#input\_description) | The description of the alias. | `string` | `null` | no |  |
 | <a name="function_version"></a> [function_version](#input\_function\_version) | The Lambda function version which this alias is created for. | `string` | `"$LATEST"` | no |  |
 | <a name="additional_version_weights"></a> [additional_version_weights](#input\_additional\_version\_weights) | A map of key/value pairs that defines the proportion of events that should be sent to different versions of a lambda function. | `map(string)` | `{}` | no |  |
+| <a name="provisioned_concurrent_executions"></a> [provisioned_concurrent_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. | `number` | `0` | no |  |
 
 #### lambda_permissions
 
@@ -93,6 +97,12 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="function_url_auth_type"></a> [function_url_auth_type](#input\_function\_url\_auth\_type) | Lambda Function URLs authentication type. | `string` | `null` | no |
 | <a name="event_source_token"></a> [event_source_token](#input\_event\_source\_token) | The Event Source Token to validate. Used with Alexa Skills. | `string` | `null` | no |
 
+#### lambda_function_provisioned_concurrency
+
+| Name | Description | Type | Default | Required |
+|:------|:------|:------|:------|:------:|
+| <a name="qualifier"></a> [qualifier](#input\_qualifier) | Function version. | `string` |  | yes |
+| <a name="provisioned_concurrent_executions"></a> [provisioned_concurrent_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. | `string` | `0` | yes |
 
 ### Outputs
 

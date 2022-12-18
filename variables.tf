@@ -122,6 +122,17 @@ variable "publish" {
     default     = false
 }
 
+variable "layers" {
+    description = "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function."
+    type = list(string)
+    default = []
+
+    validation {
+        condition = (length(var.layers) <= 5)
+        error_message = "Maximum of 5 Layers can be attached to Lambda Function."
+    }
+}
+
 variable "ephemeral_storage" {
     description = "(Optional) The amount of Ephemeral storage(/tmp) to allocate for the Lambda Function in MB."
     type        = number
@@ -137,6 +148,18 @@ variable "environment_variables" {
     description = "The map of the environment variables."
     type        = map(string)
     default     = {}
+}
+
+variable "efs_arn" {
+    description = "Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system."
+    type = string
+    default = null
+}
+
+variable "efs_mount_path" {
+    description = "Path where the function can access the file system, starting with /mnt/."
+    type = string
+    default = null
 }
 
 variable "dead_letter_target_arn" {
@@ -182,6 +205,7 @@ name: (Required) The name of the alias.
 description: (Optional) The description of the alias.
 function_version: (Optional) The Lambda function version which this alias is created for.
 additional_version_weights: (Optional) A map of key/value pairs that defines the proportion of events that should be sent to different versions of a lambda function.
+provisioned_concurrent_executions: (optional) Amount of capacity to allocate.
 EOF
     type    = any
     default = []
@@ -203,6 +227,17 @@ event_source_token: (Optional) The Event Source Token to validate. Used with Ale
 EOF
     type = list(map(string))
     default = []
+}
+
+variable "lambda_function_provisioned_concurrency" {
+    description = <<EOF
+Provisioned Concurrency Configuration for Lambda Function versions.
+
+qualifier: (Optional) Function version.
+provisioned_concurrent_executions: (optional) Amount of capacity to allocate.
+EOF
+    type = list(map(string))
+    default = []  
 }
 
 variable "tags" {

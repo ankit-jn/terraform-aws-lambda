@@ -29,6 +29,8 @@ resource aws_lambda_function "this" {
 
     publish = var.publish
 
+    layers = length(var.layers) > 0 ? var.layers : null
+
     ephemeral_storage {
        size =  var.ephemeral_storage
     }
@@ -38,6 +40,15 @@ resource aws_lambda_function "this" {
         
         content {
           variables = var.environment_variables
+        }
+    }
+
+    dynamic "file_system_config" {
+        for_each = (var.efs_arn != null || var.efs.arn != "") ? [1] : []
+
+        content {
+            arn = var.efs_arn
+            local_mount_path = var.efs_mount_path
         }
     }
 
@@ -94,6 +105,52 @@ resource aws_lambda_alias "this" {
     }
 }
 
+resource aws_lambda_permission "this" {
+    for_each = { for permission in lambda_permissions: permission.id => permission }
+
+    statement_id  = each.key
+    action        = lookup(each.value, "action", "lambda:InvokeFunction")
+    function_name = aws_lambda_function.this.function_name
+    qualifier     = lookup(each.value, "qualifier", null)
+    principal     = lookup(each.value, "principal")
+    principal_org_id = lookup(each.value, "principal_org_id", null)
+    source_arn    = lookup(each.value, "source_arn", null)
+    source_account = lookup(each.value, "source_account", null)
+    function_url_auth_type = (lookup(each.value, "action", "lambda:InvokeFunction") == "lambda:InvokeFunctionUrl") ? lookup(each.value, "function_url_auth_type", null) : null
+    event_source_token = lookup(each.value, "event_source_token", null)
+
+    depends_on = [
+        aws_lambda_function.this,
+        aws_lambda_alias.this
+    ]
+}
+
+## Provisioned Concurrency Configuration for Lambda Function Version
+resource aws_lambda_provisioned_concurrency_config "function" {
+    for_each = { for config in lambda_function_provisioned_concurrency: config.version => config 
+                            if try(config.provisioned_concurrent_executions, 0) > 0 }
+
+    function_name = aws_lambda_function.this.arn
+    qualifier     = each.value.qualifier
+
+    provisioned_concurrent_executions = each.value.provisioned_concurrent_executions
+}
+
+## Provisioned Concurrency Configuration for Lambda Alias
+resource aws_lambda_provisioned_concurrency_config "alias" {
+    for_each = { for alias in aliases: alias.name => alias 
+                            if try(alias.provisioned_concurrent_executions, 0) > 0 }
+
+    function_name = aws_lambda_function.this.arn
+    qualifier     = aws_lambda_alias.this[each.key].name
+
+    provisioned_concurrent_executions = each.value.provisioned_concurrent_executions
+
+    depends_on = [
+        aws_lambda_alias.this
+    ]
+}
+
 ## Lambda Execution IAM Role
 module "lambda_role" {
     source = "git::https://github.com/arjstack/terraform-aws-iam.git?ref=v1.0.0"
@@ -113,19 +170,4 @@ module "lambda_role" {
 
     role_default_tags = merge({"Name" = format("%s-role", var.name)}, {"Lambda" = var.name}, var.tags)
     policy_default_tags = merge({"Name" = format("%s-role-policy", var.name)}, {"Lambda" = var.name}, var.tags)
-}
-
-resource aws_lambda_permission "this" {
-    for_each = { for permission in lambda_permissions: permission.id => permission }
-
-    statement_id  = each.key
-    action        = lookup(each.value, "action", "lambda:InvokeFunction")
-    function_name = aws_lambda_function.this.function_name
-    qualifier     = lookup(each.value, "qualifier", null)
-    principal     = lookup(each.value, "principal")
-    principal_org_id = lookup(each.value, "principal_org_id", null)
-    source_arn    = lookup(each.value, "source_arn", null)
-    source_account = lookup(each.value, "source_account", null)
-    function_url_auth_type = (lookup(each.value, "action", "lambda:InvokeFunction") == "lambda:InvokeFunctionUrl") ? lookup(each.value, "function_url_auth_type", null) : null
-    event_source_token = lookup(each.value, "event_source_token", null)
 }

@@ -8,7 +8,8 @@ This module features the following components to be provisioned with different c
 - Lambda Function [[aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function)]
 - Lambda Function Alias [[aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_alias)]
 - Lambda Permissions [[aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission)]
-- Provisioned COncurrency Configuration [[aws_lambda_provisioned_concurrency_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_provisioned_concurrency_config)]
+- Lambda Function URL [[aws_lambda_function_url](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_url)]
+- Provisioned Concurrency Configuration [[aws_lambda_provisioned_concurrency_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_provisioned_concurrency_config)]
 - IAM Role [[aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role)]
 - IAM Policy [[aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy)]
 - IAM Role-Policy Attachment [[aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)]
@@ -73,6 +74,15 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="policies"></a> [policies](#input\_policies) | List of Policies (to be provisioned) to be attached to IAM Role. | `any` | `[]` | no | |
 | <a name="lambda_permissions"></a> [lambda_permissions](#lambda\_permissions) | The list of permissions configuration map, given to external sources to access the Lambda function. | `list(map(string))` | `[]` | no | |
 
+#### Function URL
+
+| Name | Description | Type | Default | Required |
+|:------|:------|:------|:------|:------:|
+| <a name="create_lambda_function_url"></a> [create_lambda_function_url](#input\_create\_lambda\_function\_url) | Flag to decide if create Lambda function URL. | `bool` | `false` | no |
+| <a name="function_url_qualifier"></a> [function_url_qualifier](#input\_function\_url\_qualifier) | The alias name | `string` | `"$LATEST"` | no |
+| <a name="authorization_type"></a> [authorization_type](#input\_authorization\_type) | Type of authentication that the function URL uses. | `string` | "NONE" | no |
+| <a name="cors"></a> [cors](#cors) | The cross-origin resource sharing (CORS) settings for the function URL. | `any` | `{}` | no |
+
 ### Nested Configuration Maps: 
 
 #### alias
@@ -106,6 +116,17 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="qualifier"></a> [qualifier](#input\_qualifier) | Function version. | `string` |  | yes |
 | <a name="provisioned_concurrent_executions"></a> [provisioned_concurrent_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. | `string` | `0` | yes |
 
+#### cors
+
+| Name | Description | Type | Default | Required |
+|:------|:------|:------|:------|:------:|
+| <a name="allow_credentials"></a> [allow_credentials](#input\_allow\_credentials) | Flag to decide if allow cookies or other credentials in requests to the function URL. | `bool` | `false` | no |
+| <a name="allow_headers"></a> [allow_headers](#input\_allow\_headers) | The HTTP headers that origins can include in requests to the function URL. | `list(string)` | `null` | no |
+| <a name="allow_methods"></a> [allow_methods](#input\_allow\_methods) | The HTTP methods that are allowed when calling the function URL. | `list(string)` | `null` | no |
+| <a name="allow_origins"></a> [allow_origins](#input\_allow\_origins) | The origins that can access the function URL. | `list(string)` | `null` | no |
+| <a name="expose_headers"></a> [expose_headers](#input\_expose\_headers) | The HTTP headers in your function response that you want to expose to origins that call the function URL. | `list(string)` | `null` | no |
+| <a name="max_age"></a> [max_age](#input\_max\_age) | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. | `number` | `0` | no |
+
 ### Outputs
 
 | Name | Type | Description |
@@ -120,6 +141,7 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="aliases_arn"></a> [aliases_arn](#output\_aliases\_arn) | `string` | Map of Lambda Function Alias ARNs. |
 | <a name="aliases_invoke_arn"></a> [aliases_invoke_arn](#output\_aliases\_invoke\_arn) | `string` | Map of Lambda Function Alias ARNs, used for invoking Lambda Function from API Gateway. |
 | <a name="lambda_role_arn"></a> [lambda_role_arn](#output\_lambda\_role\_arn) | `string` | Lambda Execution IAM Role. |
+| <a name="function_url"></a> [function_url](#output\_function\_url) | `string` | The HTTP URL endpoint for the function in the format `https://<url_id>.lambda-url.<region>.on.aws`. |
 
 ### Authors
 

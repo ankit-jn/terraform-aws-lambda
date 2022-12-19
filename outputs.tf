@@ -47,3 +47,8 @@ output "lambda_role_arn" {
     description = "Lambda Execution IAM Role."
     value = var.create_role ? module.lambda_role.service_linked_roles[local.lambda_role_name].arn : ""
 }
+
+output "function_url" {
+    description = "The HTTP URL endpoint for the function in the format `https://<url_id>.lambda-url.<region>.on.aws`."
+    value = var.create_lambda_function_url ? aws_lambda_function_url.this.function_url : ""
+}

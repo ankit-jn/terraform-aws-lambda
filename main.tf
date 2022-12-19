@@ -94,7 +94,7 @@ resource aws_lambda_alias "this" {
 
     name = each.key
     description = lookup(each.value, "description", null)
-    function_name = aws_lambda_function.this.arn
+    function_name = aws_lambda_function.this.arn ## Either function_name or ARN
     function_version = lookup(each.value, "function_version", "$LATEST")
 
     dynammic "routing_config" {
@@ -149,6 +149,28 @@ resource aws_lambda_provisioned_concurrency_config "alias" {
     depends_on = [
         aws_lambda_alias.this
     ]
+}
+
+resource aws_lambda_function_url "this" {
+  count = var.create_lambda_function_url ? 1 : 0
+
+  function_name = aws_lambda_function.this.arn ## Name of ARN of the Lambda Function
+  qualifier          = var.function_url_qualifier
+  
+  authorization_type = var.authorization_type
+
+  dynamic "cors" {
+    for_each = length(keys(var.cors)) > 0 ? [1] : []
+
+    content {
+        allow_credentials = try(var.cors.allow_credentials, false)
+        allow_headers     = try(var.cors.allow_headers, null)
+        allow_methods     = try(var.cors.allow_methods, null)
+        allow_origins     = try(var.cors.allow_origins, null)
+        expose_headers    = try(var.cors.expose_headers, null)
+        max_age           = try(var.cors.max_age, 0)
+    }
+  }
 }
 
 ## Lambda Execution IAM Role

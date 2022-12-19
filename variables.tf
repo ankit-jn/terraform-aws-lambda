@@ -240,6 +240,40 @@ EOF
     default = []  
 }
 
+variable "create_lambda_function_url" {
+    description = "Flag to decide if create Lambda function URL."
+    type        = bool
+    default     = false
+}
+
+variable "function_url_qualifier" {
+    description = "The alias name or `$LATEST`."
+    type        = string
+    default     = "$LATEST"
+}
+
+variable "authorization_type" {
+    description = "Type of authentication that the function URL uses."
+    type        = string
+    default     = "NONE"
+}
+
+variable "cors" {
+    description = <<EOF
+The cross-origin resource sharing (CORS) settings map for the function URL.
+
+allow_credentials: (Optional) Flag to decide if allow cookies or other credentials in requests to the function URL.
+allow_headers: (Optional) The HTTP headers that origins can include in requests to the function URL.
+allow_methods: (Optional) The HTTP methods that are allowed when calling the function URL.
+allow_origins: (Optional) The origins that can access the function URL.
+expose_headers: (Optional) The HTTP headers in your function response that you want to expose to origins that call the function URL.
+max_age: (Optional) The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. 
+
+EOF
+    type        = any
+    default     = {}
+}
+
 variable "tags" {
     description = "(Optional) Map of default tags to assign to Lambda."
     type        = map(string)

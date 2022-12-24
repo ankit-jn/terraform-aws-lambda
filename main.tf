@@ -2,7 +2,7 @@
 resource aws_lambda_function "this" {
     
     function_name = var.name
-    role = var.create_role ? module.lambda_role.service_linked_roles[local.lambda_role_name].arn : var.role_arn
+    role = var.create_role ? module.lambda_role[0].service_linked_roles[local.lambda_role_name].arn : var.role_arn
 
     description = var.description
     
@@ -44,7 +44,7 @@ resource aws_lambda_function "this" {
     }
 
     dynamic "file_system_config" {
-        for_each = (var.efs_arn != null || var.efs.arn != "") ? [1] : []
+        for_each = (var.efs_arn != null && var.efs_arn != "") ? [1] : []
 
         content {
             arn = var.efs_arn
@@ -69,13 +69,13 @@ resource aws_lambda_function "this" {
         }
     }
 
-    dynamic "snap_start" {
-        for_each = var.enable_snap_start ? [1] : []
+    # dynamic "snap_start" {
+    #     for_each = var.enable_snap_start ? [1] : []
 
-        content {
-            apply_on = "PublishedVersions"
-        }
-    }
+    #     content {
+    #         apply_on = "PublishedVersions"
+    #     }
+    # }
 
     dynamic "tracing_config" {
         for_each = var.tracing_mode != null ? [1] : []
@@ -90,14 +90,14 @@ resource aws_lambda_function "this" {
 
 ## Lambda Function Aliases
 resource aws_lambda_alias "this" {
-    for_each = { for alias in aliases: alias.name => alias }
+    for_each = { for alias in var.aliases: alias.name => alias }
 
     name = each.key
     description = lookup(each.value, "description", null)
     function_name = aws_lambda_function.this.arn ## Either function_name or ARN
     function_version = lookup(each.value, "function_version", "$LATEST")
 
-    dynammic "routing_config" {
+    dynamic "routing_config" {
         for_each = (try(length(keys(each.value.additional_version_weights)), 0) > 0) ? [1] : []
         content {
             additional_version_weights = each.value.additional_version_weights
@@ -106,7 +106,7 @@ resource aws_lambda_alias "this" {
 }
 
 resource aws_lambda_permission "this" {
-    for_each = { for permission in lambda_permissions: permission.id => permission }
+    for_each = { for permission in var.lambda_permissions: permission.id => permission }
 
     statement_id  = each.key
     action        = lookup(each.value, "action", "lambda:InvokeFunction")
@@ -127,7 +127,7 @@ resource aws_lambda_permission "this" {
 
 ## Provisioned Concurrency Configuration for Lambda Function Version
 resource aws_lambda_provisioned_concurrency_config "function" {
-    for_each = { for config in lambda_function_provisioned_concurrency: config.version => config 
+    for_each = { for config in var.lambda_function_provisioned_concurrency: config.version => config 
                             if try(config.provisioned_concurrent_executions, 0) > 0 }
 
     function_name = aws_lambda_function.this.arn
@@ -138,7 +138,7 @@ resource aws_lambda_provisioned_concurrency_config "function" {
 
 ## Provisioned Concurrency Configuration for Lambda Alias
 resource aws_lambda_provisioned_concurrency_config "alias" {
-    for_each = { for alias in aliases: alias.name => alias 
+    for_each = { for alias in var.aliases: alias.name => alias 
                             if try(alias.provisioned_concurrent_executions, 0) > 0 }
 
     function_name = aws_lambda_function.this.arn
@@ -181,14 +181,14 @@ module "lambda_role" {
 
     policies = local.policies_to_create
 
-    service_linked_roles = {
+    service_linked_roles = [{
                             name = local.lambda_role_name
                             description = "IAM Role for Lambda Function"
                             service_names = [
                                 "lambda.amazonaws.com"
                             ] 
                             policy_list = var.policies
-                        }
+                        }]
 
     role_default_tags = merge({"Name" = format("%s-role", var.name)}, {"Lambda" = var.name}, var.tags)
     policy_default_tags = merge({"Name" = format("%s-role-policy", var.name)}, {"Lambda" = var.name}, var.tags)

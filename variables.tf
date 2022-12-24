@@ -190,7 +190,7 @@ variable "tracing_mode" {
     default     = null
 
     validation {
-        condition = var.tracing_mode != null && contains(["PassThrough", "Active"], var.tracing_mode)
+        condition = var.tracing_mode != null ? contains(["PassThrough", "Active"], var.tracing_mode) : true
         error_message = "Possible values for `tracing_mode` are `PassThrough` and `Active`."
     }
 }

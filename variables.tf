@@ -178,12 +178,6 @@ variable "sg_ids" {
     default     = []
 }
 
-variable "enable_snap_start" {
-    description = "Flag to decide if enable snap start on `PublishedVersions`."
-    type        = bool
-    default     = false
-}
-
 variable "tracing_mode" {
     description = "Mode to define if sampling and tracing a subset of incoming requests with AWS X-Ray."
     type        = string
@@ -247,7 +241,7 @@ variable "create_lambda_function_url" {
 variable "function_url_qualifier" {
     description = "The alias name or `$LATEST`."
     type        = string
-    default     = "$LATEST"
+    default     = null
 }
 
 variable "authorization_type" {

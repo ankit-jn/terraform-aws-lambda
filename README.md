@@ -59,7 +59,6 @@ Refer [Configuration Examples](https://github.com/arjstack/terraform-aws-example
 | <a name="dead_letter_target_arn"></a> [dead_letter_target_arn](#input\_dead\_letter\_target\_arn) | The ARN of an SNS topic or SQS queue to notify when an invocation fails. | `string` | `null` | no | |
 | <a name="subnet_ids"></a> [subnet_ids](#input\_subnet\_ids) | List of subnet IDs associated with the Lambda function. | `list(string)` | `[]` | no | |
 | <a name="sg_ids"></a> [sg_ids](#input\_sg\_ids) | List of security group IDs associated with the Lambda function. | `list(string)` | `[]` | no | |
-| <a name="enable_snap_start"></a> [enable_snap_start](#input\_enable\_snap\_start) | Flag to decide if enable snap start on `PublishedVersions`. | `bool` | `false` | no | |
 | <a name="tracing_mode"></a> [tracing_mode](#input\_tracing\_mode) |  | `string` | `null` | no | |
 | <a name="aliases"></a> [aliases](#alias) | List of Lambda Function Alias configuration Map. | `any` | `[]` | no | |
 | <a name="lambda_function_provisioned_concurrency"></a> [lambda_function_provisioned_concurrency](#lambda\_function\_provisioned\_concurrency) | Provisioned Concurrency Configuration for Lambda Function versions. | list(map(string)) | `[]` | no | |

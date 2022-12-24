@@ -69,14 +69,6 @@ resource aws_lambda_function "this" {
         }
     }
 
-    # dynamic "snap_start" {
-    #     for_each = var.enable_snap_start ? [1] : []
-
-    #     content {
-    #         apply_on = "PublishedVersions"
-    #     }
-    # }
-
     dynamic "tracing_config" {
         for_each = var.tracing_mode != null ? [1] : []
 

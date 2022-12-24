@@ -20,7 +20,6 @@ variable "policies" {
   default = []
 }
 
-
 variable "description" {
     description = "(Optional) Description of what your Lambda Function does."
     type        = string
@@ -60,7 +59,6 @@ variable "file_name" {
     type        = string
     default     = null
 }
-
 
 variable image_uri {
     description = "(Optional) ECR image URI containing the function's deployment package."
